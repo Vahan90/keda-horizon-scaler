@@ -34,7 +34,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/keda-horizon-scaler:latest
+            ghcr.io/vahan90/keda-horizon-scaler:latest
             ghcr.io/${{ github.repository_owner }}/keda-horizon-scaler:${{ github.sha }}
 
       - name: Image digest
