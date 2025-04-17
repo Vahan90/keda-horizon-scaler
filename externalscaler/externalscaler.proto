@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+// Package name for Go import alias
+package externalscaler;
+
+// go_package option must match your module and folder
+option go_package = "keda-horizon-scaler/externalscaler";
+
+// ExternalScaler defines the gRPC service KEDA will call
+service ExternalScaler {
+  // Called to check if scaler should be active (scale from zero)
+  rpc IsActive(ScaledObjectRef) returns (IsActiveResponse) {}
+
+  // (Optional) Server stream for push-based scaling
+  rpc StreamIsActive(ScaledObjectRef) returns (stream IsActiveResponse) {}
+
+  // Defines the metric name and target for HPA
+  rpc GetMetricSpec(ScaledObjectRef) returns (GetMetricSpecResponse) {}
+
+  // Fetches current metric values
+  rpc GetMetrics(GetMetricsRequest) returns (GetMetricsResponse) {}
+}
+
+// ScaledObjectRef contains identifying info and metadata
+message ScaledObjectRef {
+  string name = 1;
+  string namespace = 2;
+  map<string, string> scalerMetadata = 3;
+}
+
+// Response for IsActive
+message IsActiveResponse {
+  bool result = 1;
+}
+
+// Metric specification for HPA
+message MetricSpec {
+  string metricName = 1;
+  int64 targetSize = 2;
+  double targetSizeFloat = 3;
+}
+
+message GetMetricSpecResponse {
+  repeated MetricSpec metricSpecs = 1;
+}
+
+// Request to fetch metrics
+message GetMetricsRequest {
+  ScaledObjectRef scaledObjectRef = 1;
+  string metricName = 2;
+}
+
+// Value of a single metric
+message MetricValue {
+  string metricName = 1;
+  int64 metricValue = 2;
+  double metricValueFloat = 3;
+}
+
+message GetMetricsResponse {
+  repeated MetricValue metricValues = 1;
+}
